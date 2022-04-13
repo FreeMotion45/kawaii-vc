@@ -15,6 +15,7 @@ node_modules
 
 # Ignoring build folders
 *dist/*
+*build/*
 
 # vs code
 .vscode
