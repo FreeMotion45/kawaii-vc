@@ -1,5 +1,10 @@
 {
+  "type": "module",
+  
   "devDependencies": {
     "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "socket.io": "^4.4.1"
   }
 }
