@@ -1,21 +1,20 @@
 import { Server } from 'socket.io'
 import { KawaiiServer } from './kawaiiServer'
-import express from 'express'
 import { createServer as createHttpServer } from 'http'
+import * as express from 'express'
+import * as cors from 'cors'
 
-const expressHost = express()
+const app = express()
+app.use(cors())
 
-const httpServer = createHttpServer(expressHost)
+const httpServer = createHttpServer(app)
 
-
-const PORT = 42069
-
-const httpOptions = {
-    cors: {
-        origin: '*'
-    }
-}
-const io = new Server(httpServer, httpOptions)
+const io = new Server(httpServer)
 const kws = new KawaiiServer(io)
 
-httpServer.listen(PORT)
+app.get('/', (req, res) => {
+    res.send('<h1>Hello World!</h1>')
+})
+
+const PORT = 42069
+app.listen(PORT)
