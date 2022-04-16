@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 
-export class KawaiiServer {
+class KawaiiServer {
     private io: Server    
 
     constructor(io: Server) {
@@ -22,4 +22,8 @@ export class KawaiiServer {
         this.io.on('connect', this.onUserConnect)
         this.io.on('disconnect', this.onUserDisconnect)
     }
+}
+
+export const registerKawaiiServerSocketIO = (io: Server) => {
+    const kws = new KawaiiServer(io)
 }
