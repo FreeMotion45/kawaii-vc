@@ -1,25 +1,25 @@
 import { Server, Socket } from "socket.io";
 
 export class KawaiiServer {
-    #io: Server;
+    private io: Server    
 
     constructor(io: Server) {
-        this.#io = io
+        this.io = io
         console.log('Dani starts sucking the D!')
 
-        this.#initialize()
+        this.initialize()
     }
 
-    #onUserConnect(userIo: Socket) {
+    private onUserConnect(userIo: Socket) {
         console.log(`${userIo.id} connected!`)
     }
 
-    #onUserDisconnect(userIo: Socket) {
+    private onUserDisconnect(userIo: Socket) {
         console.log(`${userIo.id} disconnected!`)
     }
 
-    #initialize() {
-        this.#io.on('connect', this.#onUserConnect)
-        this.#io.on('disconnect', this.#onUserDisconnect)
+    private initialize() {
+        this.io.on('connect', this.onUserConnect)
+        this.io.on('disconnect', this.onUserDisconnect)
     }
 }
