@@ -9,7 +9,11 @@ app.use(cors())
 
 const httpServer = createHttpServer(app)
 
-const io = new Server(httpServer)
+const io = new Server(httpServer, {
+    cors: {
+        origin: '*'
+    }
+})
 registerKawaiiServerSocketIO(io)
 
 app.get('/', (req, res) => {
