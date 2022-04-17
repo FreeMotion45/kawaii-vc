@@ -3,6 +3,7 @@
         "target": "ES2022",
         "outDir": "./build",
         "moduleResolution": "node",
-        "module": "CommonJS"
+        "module": "CommonJS",
+        "esModuleInterop": true,
     }
 }
