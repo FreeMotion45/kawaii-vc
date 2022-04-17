@@ -8,8 +8,6 @@ const PORT = 42069
 
 const app = express()
 
-app.use(cors())
-
 const server = http.createServer(app).listen(PORT)
 
 const io = new Server(server, {
