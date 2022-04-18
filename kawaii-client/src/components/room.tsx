@@ -1,8 +1,13 @@
 import React from "react";
+import {Room} from './styles/room.styles';
 
-export function room (){
+function VoiceRoom(){
 
-    return (
-        <h1>...</h1>
+    return (        
+        <div className="room">
+            <Room> hello </Room>
+        </div>
     );
 }
+
+export default VoiceRoom;

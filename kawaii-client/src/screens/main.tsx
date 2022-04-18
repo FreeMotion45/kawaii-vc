@@ -1,6 +1,8 @@
 import React from "react";
 import { io } from "socket.io-client";
 import { ReactMediaRecorder } from "react-media-recorder";
+import VoiceRoom from '../components/room'
+
 
 
 export function Main() {
@@ -8,10 +10,14 @@ export function Main() {
     //const connectToServer = () => {socket.on("connect", () => console.log(socket.id))}
     socket.on("connect", () => console.log(socket.id))
 
-
     
+
     return (
-        <h1>Hello world</h1>
+        <div>
+        <VoiceRoom />
+        <h1>hello world </h1>
+            
+        </div>
     );
 }
 
