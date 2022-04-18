@@ -1,11 +1,13 @@
 import React from "react";
-import {Room} from './styles/room.styles';
+import {Room, JoinButton} from './styles/room.styles';
 
 function VoiceRoom(){
 
     return (        
         <div className="room">
-            <Room> hello </Room>
+            <Room> 
+                <JoinButton>join!</JoinButton>
+            </Room>
         </div>
     );
 }
