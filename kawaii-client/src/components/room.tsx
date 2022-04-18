@@ -1,15 +1,16 @@
 import React from "react";
 import {Room, JoinButton} from './styles/room.styles';
 
-function VoiceRoom(){
 
+const VoiceRoom = (props: any) => { 
     return (        
         <div className="room">
             <Room> 
-                <JoinButton>join!</JoinButton>
+                <JoinButton onClick={() => <h1>props.id</h1>}>join!</JoinButton>
             </Room>
         </div>
     );
 }
+
 
 export default VoiceRoom;

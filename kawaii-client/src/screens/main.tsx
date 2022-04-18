@@ -9,17 +9,17 @@ export function Main() {
     const socket = io("http://localhost:42069");
     //const connectToServer = () => {socket.on("connect", () => console.log(socket.id))}
     socket.on("connect", () => console.log(socket.id))
-
+    
     
 
     return (
         <div>
-        <VoiceRoom />
-        <h1>hello world </h1>
-            
+            <VoiceRoom id={socket.id}/>     
         </div>
     );
 }
+
+
 
 
 
