@@ -14,7 +14,7 @@ node_modules
 .sass-cache
 
 # Ignoring build folders
-*dist/*
+*/dist/*
 *build*
 
 # vs code
