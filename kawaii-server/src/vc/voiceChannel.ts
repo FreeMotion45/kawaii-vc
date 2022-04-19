@@ -30,6 +30,6 @@ export class VoiceChannel {
 
     public streamUserVoice(userIO: Socket, audioBuffer: any) {
         // TODO: Implement this...
-        console.log(`${userIO.id} streamd a new voice event!`)
+        console.log(`${userIO.id} streamed a new voice event!`)
     }
 }
