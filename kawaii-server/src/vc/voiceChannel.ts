@@ -3,7 +3,7 @@ import { Socket } from "socket.io";
 export class VoiceChannel {
     public name: string
 
-    private userIOs: Socket[]   
+    private userIOs: Socket[] = []
     
     constructor(name: string) {
         this.name = name
