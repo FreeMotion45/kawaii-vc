@@ -8,6 +8,7 @@ class KawaiiServer {
     constructor() { }
 
     public initialize(io: Server) {
+        this.io = io
         this.voiceChannels.push(new VoiceChannel('general'))
 
         console.log('Registering Dani SUCC events...')        
