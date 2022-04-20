@@ -9,6 +9,7 @@ export const Room = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 `;
 export const JoinButton = styled.button`
     width:80px;
@@ -16,4 +17,14 @@ export const JoinButton = styled.button`
     background-color: green;
     border: 20px;
     border-radius: 20px;
+    
 ` 
+export const LeaveButton = styled.button`
+    
+    width:80px;
+    height:50px;
+    background-color: red;
+    border: 20px;
+    border-radius: 20px;
+
+`

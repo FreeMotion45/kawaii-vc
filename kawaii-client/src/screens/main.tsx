@@ -3,8 +3,6 @@ import { io } from "socket.io-client";
 import { ReactMediaRecorder } from "react-media-recorder";
 import VoiceRoom from '../components/room'
 
-
-
 export function Main() {
     const socket = io("http://localhost:42069");
     //const connectToServer = () => {socket.on("connect", () => console.log(socket.id))}
@@ -14,7 +12,7 @@ export function Main() {
 
     return (
         <div>
-            <VoiceRoom id={socket.id}/>     
+            <VoiceRoom connection={socket}/>     
         </div>
     );
 }
