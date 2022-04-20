@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import {Room, JoinButton, LeaveButton} from './styles/room.styles';
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { ReactMediaRecorder, useReactMediaRecorder} from "react-media-recorder";
 
 
-const VoiceRoom = (props: any) => {
-    const connectionId = props.connection
+export const VoiceRoom = (props: any) => {
+    const { socket } = props
     const [id, setId] = useState("not joined");
     const {status, startRecording, stopRecording} = useReactMediaRecorder({ audio: true });
     console.log(status)
     return (        
         <div className="room">
             <Room> 
-                <JoinButton onClick={voiceStream}>join!</JoinButton>
+                <JoinButton onClick={(e) => joinVoiceChannel(socket)}>join!</JoinButton>
                 <h1 >your id is: {id} </h1>
                 <LeaveButton onClick={stopRecording}> work? </LeaveButton>
             </Room>
@@ -20,8 +20,7 @@ const VoiceRoom = (props: any) => {
     );
 }
 
-const voiceStream = (props:any) => {
-    props.connection.emit("send_recording", props.startRecording)
+const joinVoiceChannel = (socket: Socket) => {
+    socket.emit('join voice channel', 'general')
+    console.log('Joined voice channel General!')
 }
-
-export default VoiceRoom;
