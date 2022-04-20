@@ -5,13 +5,11 @@ class KawaiiServer {
     private io: Server
     private voiceChannels: VoiceChannel[] = []
 
-    constructor(io: Server) {
-        this.io = io
-        this.voiceChannels.push(new VoiceChannel('general'))
-        this.initialize()
-    }
+    constructor() { }
 
-    private initialize() {
+    public initialize(io: Server) {
+        this.voiceChannels.push(new VoiceChannel('general'))
+
         console.log('Registering Dani SUCC events...')        
         
         this.io.on('connect', (socket) => this.onUserConnect(socket))
@@ -62,5 +60,6 @@ class KawaiiServer {
 }
 
 export const registerKawaiiServerSocketIO = (io: Server) => {
-    const kws = new KawaiiServer(io)
+    const kws = new KawaiiServer()
+    kws.initialize(io)
 }
