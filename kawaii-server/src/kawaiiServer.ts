@@ -23,7 +23,7 @@ class KawaiiServer {
     private onUserConnect(userIo: Socket) {
         console.log(`${userIo.id} connected!`) 
 
-        userIo.on('join voice channel', (voiceChannelName) => this.onJoinVoiceChannel(userIo, voiceChannelName))
+        userIo.on('join voice channel', (voiceChannelName: string, callback: Function) => this.onJoinVoiceChannel(userIo, voiceChannelName, callback))
         userIo.on('exit voice channel', () => this.onExitVoiceChannel(userIo))
         userIo.on('disconnect', () => this.onUserDisconnect(userIo))
     }
@@ -32,11 +32,15 @@ class KawaiiServer {
         console.log(`${userIo.id} disconnected! Bye bye!`)
     }
 
-    private onJoinVoiceChannel(userIO: Socket, voiceChannelName: string) {
+    private onJoinVoiceChannel(userIO: Socket, voiceChannelName: string, callback: Function) {
         const voiceChannel = this.getVoiceChannelByName(voiceChannelName)
         voiceChannel.addUser(userIO)
 
         userIO.on('voice', (voiceBuffer) => voiceChannel.streamUserVoice(userIO, voiceBuffer))
+        
+        callback({
+            status: 'ok'
+        })
     }
 
     private onExitVoiceChannel(userIO: Socket) {
