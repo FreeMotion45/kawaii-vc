@@ -21,6 +21,7 @@ export const VoiceRoom = (props: any) => {
 }
 
 const joinVoiceChannel = (socket: Socket) => {
-    socket.emit('join voice channel', 'general')
+    socket.emit('join voice channel', 'general',(response: any) => { console.log(response.status); })
+    //socket.emit('voice', voice)
     console.log('Joined voice channel General!')
 }
