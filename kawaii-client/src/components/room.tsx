@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {Room, JoinButton, LeaveButton} from './styles/room.styles';
+import { Room, JoinButton, LeaveButton } from './styles/room.styles';
 
 type RecorderState = {
     state: string,
