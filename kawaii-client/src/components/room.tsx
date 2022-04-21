@@ -20,8 +20,7 @@ const useRecorder = () => {
     return {
         addHandler: (handler: (ev: BlobEvent) => any) => {
             handlers.push(handler)
-            audioRecorder.addHandler(handler)
-            console.log('added handler')
+            audioRecorder.addHandler(handler)            
         },
 
         removeHandler: (handler: (ev: BlobEvent) => any) => {
