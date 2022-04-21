@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AudioRecorder } from "../media/audioRecorder";
 import { Room, JoinButton, LeaveButton } from './styles/room.styles';
 
 type RecorderState = {
@@ -48,26 +49,29 @@ const useRecorder = () => {
 
 export const VoiceRoom = (props: any) => {
     const [id, setId] = useState("not joined")
-    const [cnt, setCnt] = useState(1)
-    const { stopRecord, startRecord } = useRecorder()
     
+    const [cnt, setCnt] = useState(1)
+    const audioRecorderRef = useRef(new AudioRecorder())
+    const audioRecorder = audioRecorderRef.current
 
     const streamVoice = (ev: BlobEvent) => {
-        console.log(`Voice`)
+        console.log(`Voice ${cnt}`)
+        setCnt((prev) => prev + 1)
     }
 
     useEffect(() => {
-        startRecord(streamVoice, 1000)
+        audioRecorder.start(100)
+        audioRecorder.addHandler(streamVoice)
 
         return () => {
-            stopRecord()            
+            audioRecorder.removeHandler(streamVoice)
         }
     })
 
     return (
         <div className="room">
             <Room> 
-                <JoinButton onClick={(e) => setId('joined')}>join!</JoinButton>
+                <JoinButton onClick={() => audioRecorder.start(1000)}>join!</JoinButton>
                 <h1 >your id is: {id} </h1>
                 <LeaveButton>Exit voice channel</LeaveButton>
             </Room>
