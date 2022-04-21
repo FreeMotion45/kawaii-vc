@@ -8,6 +8,10 @@ export class AudioRecorder {
         this.onDataHandlers = []
     }
 
+    public isCurrentlyRecording() {
+        return this.isRecording
+    }
+
     public async start(timeslice: number) {
         if (this.isRecording) return
 
