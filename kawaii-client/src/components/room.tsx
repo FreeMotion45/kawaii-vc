@@ -1,27 +1,80 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {Room, JoinButton, LeaveButton} from './styles/room.styles';
-import { io, Socket } from "socket.io-client";
-import { ReactMediaRecorder, useReactMediaRecorder} from "react-media-recorder";
+
+type RecorderState = {
+    state: string,
+    media: MediaRecorder | undefined,
+}
+
+const initialState: RecorderState = {
+    state: 'stopped',
+    media: undefined,
+}
+
+const useRecorder = () => {    
+    const [recorderState, setRecorderState] = useState(initialState)
+    let { media, state } = recorderState
+
+    const startRecord = async (onData: (ev: BlobEvent) => any, timeslice: number = -1) => {
+        if (state !== 'stopped') return
+
+        const audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: true
+        })
+
+        media = new MediaRecorder(audioStream)
+        media.ondataavailable = onData
+
+        if (timeslice > 0)
+            media.start(timeslice)
+        else
+            media.start()        
+            
+        state = 'recording'
+    }
+
+    const stopRecord = () => {        
+        if (state !== 'recording' || media === undefined) return        
+        state = 'stopped'
+        media.stop()             
+    }  
+
+    return {
+        startRecord: startRecord,
+        stopRecord: stopRecord,
+        changeCallback: (onData: (ev: BlobEvent) => any) => {
+            if (media === undefined) return
+            media.ondataavailable = onData
+        }     
+    }
+}
 
 
 export const VoiceRoom = (props: any) => {
-    const { socket } = props
-    const [id, setId] = useState("not joined");
-    const {status, startRecording, stopRecording} = useReactMediaRecorder({ audio: true });
-    console.log(status)
-    return (        
+    const [id, setId] = useState("not joined")
+    const [cnt, setCnt] = useState(1)
+    const { stopRecord, startRecord, changeCallback } = useRecorder()
+    
+
+    const streamVoice = (ev: BlobEvent) => {
+        console.log(`Voice`)
+    }
+
+    useEffect(() => {
+        startRecord(streamVoice, 1000)
+
+        return () => {
+            stopRecord()            
+        }
+    })
+
+    return (
         <div className="room">
             <Room> 
-                <JoinButton onClick={(e) => joinVoiceChannel(socket)}>join!</JoinButton>
+                <JoinButton onClick={(e) => setId('joined')}>join!</JoinButton>
                 <h1 >your id is: {id} </h1>
-                <LeaveButton onClick={stopRecording}> work? </LeaveButton>
+                <LeaveButton>Exit voice channel</LeaveButton>
             </Room>
         </div>
     );
-}
-
-const joinVoiceChannel = (socket: Socket) => {
-    socket.emit('join voice channel', 'general',(response: any) => { console.log(response.status); })
-    //socket.emit('voice', voice)
-    console.log('Joined voice channel General!')
 }
