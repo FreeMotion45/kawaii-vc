@@ -32,6 +32,6 @@ export class VoiceChannel {
 
     public streamUserVoice(userIO: Socket, audioBuffer: any) {        
         console.log(`${userIO.id} streamed a new voice event!`)
-        userIO.to(this.name).emit('voice', userIO.id, audioBuffer)
+        userIO.to(this.name).volatile.emit('voice', userIO.id, audioBuffer)
     }
 }
