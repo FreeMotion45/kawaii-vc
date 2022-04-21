@@ -16,20 +16,22 @@ export class VoiceChannel {
 
         this.userIOs.push(userIO)
         console.log(`${userIO.id} joined VC ${this.name}`)
+        userIO.join(this.name)
     }
 
     public removeUser(userIO: Socket) {
         const userIOIndex = this.userIOs.indexOf(userIO)
         this.userIOs.splice(userIOIndex, 1)
         console.log(`${userIO.id} exited from VC ${this.name}`)
+        userIO.leave(this.name)
     }
 
     public userExists(userIO: Socket) : boolean {
         return this.userIOs.includes(userIO)
     }
 
-    public streamUserVoice(userIO: Socket, audioBuffer: any) {
-        // TODO: Implement this...
+    public streamUserVoice(userIO: Socket, audioBuffer: any) {        
         console.log(`${userIO.id} streamed a new voice event!`)
+        userIO.to(this.name).emit('voice', userIO.id, audioBuffer)
     }
 }

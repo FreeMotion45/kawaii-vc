@@ -9,7 +9,7 @@ class KawaiiServer {
 
     public initialize(io: Server) {
         this.io = io
-        this.voiceChannels.push(new VoiceChannel('general'))
+        this.createVoiceChannel('general')
 
         console.log('Registering Dani SUCC events...')        
         
@@ -20,11 +20,15 @@ class KawaiiServer {
         console.log('Registered To Dani dickonnect event!')
     }
 
+    private createVoiceChannel(name: string) {
+        this.voiceChannels.push(new VoiceChannel(name))
+    }
+
     private onUserConnect(userIo: Socket) {
         console.log(`${userIo.id} connected!`) 
 
         userIo.on('join voice channel', (voiceChannelName: string, callback: Function) => this.onJoinVoiceChannel(userIo, voiceChannelName, callback))
-        userIo.on('exit voice channel', () => this.onExitVoiceChannel(userIo))
+        userIo.on('exit voice channel', (callback: Function) => this.onExitVoiceChannel(userIo, callback))
         userIo.on('disconnect', () => this.onUserDisconnect(userIo))
     }
 
@@ -32,18 +36,18 @@ class KawaiiServer {
         console.log(`${userIo.id} disconnected! Bye bye!`)
     }
 
-    private onJoinVoiceChannel(userIO: Socket, voiceChannelName: string, callback: Function) {
+    private onJoinVoiceChannel(userIO: Socket, voiceChannelName: string, clientCallback: Function) {
         const voiceChannel = this.getVoiceChannelByName(voiceChannelName)
         voiceChannel.addUser(userIO)
 
         userIO.on('voice', (voiceBuffer) => voiceChannel.streamUserVoice(userIO, voiceBuffer))
-        
-        callback({
+
+        clientCallback({
             status: 'ok'
         })
     }
 
-    private onExitVoiceChannel(userIO: Socket) {
+    private onExitVoiceChannel(userIO: Socket, clientCallback: Function) {
         for (const voiceChannel of this.voiceChannels) {
             if (voiceChannel.userExists(userIO)) {
                 voiceChannel.removeUser(userIO)
@@ -51,6 +55,10 @@ class KawaiiServer {
                 userIO.removeAllListeners('voice')
             }
         }
+
+        clientCallback({
+            status: 'ok'
+        })
     }
 
     private getVoiceChannelByName(voiceChannelName: string) : VoiceChannel {
