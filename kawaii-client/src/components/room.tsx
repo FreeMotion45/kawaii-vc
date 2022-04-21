@@ -11,8 +11,7 @@ const useRecorder = () => {
     useEffect(() => {
         return () => {
             for (const handler of handlers) {
-                audioRecorder.removeHandler(handler)
-                console.log('removed handler')
+                audioRecorder.removeHandler(handler)                
             }
         }
     })
