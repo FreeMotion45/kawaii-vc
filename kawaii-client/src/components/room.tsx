@@ -41,11 +41,7 @@ const useRecorder = () => {
 
     return {
         startRecord: startRecord,
-        stopRecord: stopRecord,
-        changeCallback: (onData: (ev: BlobEvent) => any) => {
-            if (media === undefined) return
-            media.ondataavailable = onData
-        }     
+        stopRecord: stopRecord,    
     }
 }
 
@@ -53,7 +49,7 @@ const useRecorder = () => {
 export const VoiceRoom = (props: any) => {
     const [id, setId] = useState("not joined")
     const [cnt, setCnt] = useState(1)
-    const { stopRecord, startRecord, changeCallback } = useRecorder()
+    const { stopRecord, startRecord } = useRecorder()
     
 
     const streamVoice = (ev: BlobEvent) => {
