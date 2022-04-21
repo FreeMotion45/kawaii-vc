@@ -2,54 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { AudioRecorder } from "../media/audioRecorder";
 import { Room, JoinButton, LeaveButton } from './styles/room.styles';
 
-type RecorderState = {
-    state: string,
-    media: MediaRecorder | undefined,
-}
-
-const initialState: RecorderState = {
-    state: 'stopped',
-    media: undefined,
-}
-
-const useRecorder = () => {    
-    const [recorderState, setRecorderState] = useState(initialState)
-    let { media, state } = recorderState
-
-    const startRecord = async (onData: (ev: BlobEvent) => any, timeslice: number = -1) => {
-        if (state !== 'stopped') return
-
-        const audioStream = await navigator.mediaDevices.getUserMedia({
-            audio: true
-        })
-
-        media = new MediaRecorder(audioStream)
-        media.ondataavailable = onData
-
-        if (timeslice > 0)
-            media.start(timeslice)
-        else
-            media.start()        
-            
-        state = 'recording'
-    }
-
-    const stopRecord = () => {        
-        if (state !== 'recording' || media === undefined) return        
-        state = 'stopped'
-        media.stop()             
-    }  
-
-    return {
-        startRecord: startRecord,
-        stopRecord: stopRecord,    
-    }
-}
-
 
 export const VoiceRoom = (props: any) => {
     const [id, setId] = useState("not joined")
-    
+
     const [cnt, setCnt] = useState(1)
     const audioRecorderRef = useRef(new AudioRecorder())
     const audioRecorder = audioRecorderRef.current
