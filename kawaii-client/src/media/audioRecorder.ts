@@ -12,17 +12,23 @@ export class AudioRecorder {
         return this.isRecording
     }
 
-    public async start(timeslice: number) {
+    public async start(timeslice?: number) {
         if (this.isRecording) return
 
+        console.log(navigator.mediaDevices)
+
         const audioStream = await navigator.mediaDevices.getUserMedia({
-            audio: true
-        })
+            audio: { deviceId: '3d4293bf8707ec16377db6b175335dce4775456082ad340257a02a19e461aebb' },            
+        })        
 
         this.media = new MediaRecorder(audioStream)
-        this.media.ondataavailable = (ev: BlobEvent) => this.onData(ev)
+        this.media.ondataavailable = (ev: BlobEvent) => {
+            console.log('ACTUAL DATA')
+            console.log(ev.data)
+            this.onData(ev)
+        }
 
-        if (timeslice > 0)
+        if (timeslice !== undefined)
             this.media.start(timeslice)
         else
             this.media.start() 
@@ -44,7 +50,7 @@ export class AudioRecorder {
         this.onDataHandlers.splice(this.onDataHandlers.indexOf(onDataHandler), 1)        
     }
 
-    private onData(ev: BlobEvent) {
+    private onData(ev: BlobEvent) {        
         for (const handler of this.onDataHandlers) {
             handler(ev)
         }
