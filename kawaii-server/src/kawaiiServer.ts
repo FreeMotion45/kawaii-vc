@@ -1,16 +1,21 @@
 import { Server, Socket } from "socket.io";
 import { VoiceChannel } from "./vc/voiceChannel";
+import { createWorker, types as mediasoupTypes } from "mediasoup";
 
-class KawaiiServer {
+class KawaiiServer {    
     private _io: Server
     private _voiceChannels: VoiceChannel[] = []
     private _userRoom: Map<string, VoiceChannel> = new Map()
 
+    private _worker: mediasoupTypes.Worker    
+
     constructor() { }
 
-    public initialize(io: Server) {
+    public async initialize(io: Server) {
+        await this._initializeMediaSoup()
+
         this._io = io
-        this.createVoiceChannel('general')
+        await this.createVoiceChannel('general')
 
         console.log('Registering Dani SUCC events...')
 
@@ -21,65 +26,51 @@ class KawaiiServer {
         console.log('Registered To Dani dickonnect event!')
     }
 
-    private createVoiceChannel(name: string) {
-        this._voiceChannels.push(new VoiceChannel(name))
+    private async _initializeMediaSoup() {
+        this._worker = await createWorker()        
+    }
+
+    private async createVoiceChannel(name: string) {
+        const router = await this._worker.createRouter({
+            mediaCodecs : [
+                {
+                    kind      : 'audio',
+                    mimeType  : 'audio/opus',
+                    clockRate : 48000,
+                    channels  : 2
+                },
+                {
+                    kind       : 'video',
+                    mimeType   : 'video/VP8',
+                    clockRate  : 90000,
+                    parameters:
+                    {
+                        'x-google-start-bitrate': 1000
+                    }
+                }
+            ]      
+        })
+
+        this._voiceChannels.push(new VoiceChannel(name, router))
     }
 
     private onUserConnect(userIo: Socket) {
         console.log(`${userIo.id} connected!`)
-
-        userIo.on('join voice channel', (voiceChannelName: string, callback: Function) => this.onJoinVoiceChannel(userIo, voiceChannelName, callback))
-        userIo.on('exit voice channel', (callback: Function) => this.onExitVoiceChannel(userIo, callback))
-        userIo.on('send rtc offer', (peer: string, offer: RTCSessionDescriptionInit, returnPeerAnswerToOfferrer: (answer: RTCSessionDescriptionInit) => any) => this.onSendRTCOffer(userIo, peer, offer, returnPeerAnswerToOfferrer))
-        userIo.on('send ice candidate', (peer: string, iceCandidate: RTCIceCandidate) => this.onSendICECandidate(userIo, peer, iceCandidate))
         userIo.on('disconnect', () => this.onUserDisconnect(userIo))
+
+        userIo.on('join room', async (data: any, cb: (res: any) => void) => {
+            const { roomName } = data
+            await this.getVoiceChannelByName(roomName).addUser(userIo)
+            cb({})
+        })
     }
 
     private onUserDisconnect(userIo: Socket) {
         console.log(`${userIo.id} disconnected! Bye bye!`)
-    }
-
-    private onJoinVoiceChannel(userIO: Socket, voiceChannelName: string, returnChannelData: Function) {
-        const voiceChannel = this.getVoiceChannelByName(voiceChannelName)
-        voiceChannel.addUser(userIO)
-        this._userRoom[userIO.id] = voiceChannel
-
-        const users = voiceChannel.users
-        users.filter(user => user !== userIO)
-        const userIDs = []
-        users.forEach(user => {
-            if (user.id !== userIO.id) {
-                userIDs.push(user.id)
-            }            
-        })
-
-        returnChannelData({
-            peers: userIDs
-        })
-    }
-
-    private async onSendRTCOffer(userIO: Socket, peer: string, offer: RTCSessionDescriptionInit, returnPeerAnswerToOfferrer: (answer: RTCSessionDescriptionInit) => any) {
-        const voiceChannel: VoiceChannel = this._userRoom[userIO.id]
-        const peerAnswer = await voiceChannel.sendRTCOfferToPeer(userIO, peer, offer)
-        returnPeerAnswerToOfferrer(peerAnswer)
-    }
-
-    private async onSendICECandidate(userIO: Socket, peer: string, iceCandidate: RTCIceCandidate) {
-        const voiceChannel: VoiceChannel = this._userRoom[userIO.id]
-        voiceChannel.sendICECandidate(userIO, peer, iceCandidate)
-    }
-
-    private onExitVoiceChannel(userIO: Socket, clientCallback: Function) {
-        for (const voiceChannel of this._voiceChannels) {
-            if (voiceChannel.userExists(userIO)) {
-                voiceChannel.removeUser(userIO)
-
-                userIO.removeAllListeners('voice')
+        this._voiceChannels.forEach(vc => {
+            if (vc.userExists(userIo)) {
+                vc.removeUser(userIo)
             }
-        }
-
-        clientCallback({
-            status: 'ok'
         })
     }
 
@@ -91,10 +82,10 @@ class KawaiiServer {
         }
 
         return undefined
-    }    
+    }
 }
 
-export const registerKawaiiServerSocketIO = (io: Server) => {
+export const registerKawaiiServerSocketIO = async (io: Server) => {
     const kws = new KawaiiServer()
-    kws.initialize(io)
+    await kws.initialize(io)
 }
