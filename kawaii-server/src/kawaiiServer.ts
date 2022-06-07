@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { VoiceChannel } from "./vc/voiceChannel";
 import { createWorker, types as mediasoupTypes } from "mediasoup";
+import { ClientSession } from "./users/client";
 
 class KawaiiServer {    
     private _io: Server
@@ -16,14 +17,14 @@ class KawaiiServer {
 
         this._io = io
         await this.createVoiceChannel('general')
+        await this.createVoiceChannel('reshef-zoid')
+        await this.createVoiceChannel('yoav public-baths')
+        await this.createVoiceChannel('gabi-power-up-star')
 
         console.log('Registering Dani SUCC events...')
 
         this._io.on('connect', (socket) => this.onUserConnect(socket))
         console.log('Registered To Dani connect event!')
-
-        this._io.on('disconnect', (socket) => this.onUserDisconnect(socket))
-        console.log('Registered To Dani dickonnect event!')
     }
 
     private async _initializeMediaSoup() {
@@ -55,22 +56,44 @@ class KawaiiServer {
     }
 
     private onUserConnect(userIo: Socket) {
+        const clientSession: ClientSession = {
+            socket: userIo,
+            currentChannel: undefined
+        }
+
         console.log(`${userIo.id} connected!`)
-        userIo.on('disconnect', () => this.onUserDisconnect(userIo))
+
+        userIo.on('disconnect', () => {
+            if (clientSession.currentChannel !== undefined) {
+                clientSession.currentChannel.removeUser(userIo)
+            }
+
+            console.log(`${userIo.id} disconnected! Bye bye!`)
+        })
+        console.log('Registered To Dani dickonnect event!')
 
         userIo.on('join room', async (data: any, cb: (res: any) => void) => {
             const { roomName } = data
-            await this.getVoiceChannelByName(roomName).addUser(userIo)
+            clientSession.currentChannel = this.getVoiceChannelByName(roomName)
+            await clientSession.currentChannel.addUser(userIo)
             cb({})
         })
-    }
 
-    private onUserDisconnect(userIo: Socket) {
-        console.log(`${userIo.id} disconnected! Bye bye!`)
-        this._voiceChannels.forEach(vc => {
-            if (vc.userExists(userIo)) {
-                vc.removeUser(userIo)
-            }
+        userIo.on('leave room', async (cb: (res: any) => void) => {
+            await clientSession.currentChannel.removeUser(userIo)
+            clientSession.currentChannel = undefined
+            cb({})
+        })
+
+        userIo.on('get voice channels', (cb: (res: any) => void) => {
+            const channelNames = []
+            this._voiceChannels.forEach(channel => {
+                channelNames.push(channel.name)
+            })
+
+            cb({
+                channelNames,
+            })
         })
     }
 

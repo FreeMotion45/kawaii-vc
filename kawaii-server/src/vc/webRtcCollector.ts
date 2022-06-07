@@ -4,14 +4,14 @@ import { types as msTypes } from "mediasoup"
 export class WebRtcClient {
     private _sendTransport: msTypes.WebRtcTransport | undefined
     private _consumerTransport: msTypes.WebRtcTransport | undefined
-    private _producers: msTypes.Producer[]    
-    private _consumers: msTypes.Consumer[]
+    private _producers: Map<string, msTypes.Producer>
+    private _consumers: Map<string, msTypes.Consumer>
     private _dataProducer: msTypes.DataProducer | undefined
     private _rtpCapabilities: msTypes.RtpCapabilities | undefined
     
     constructor() {
-        this._producers = []
-        this._consumers = []
+        this._producers = new Map()
+        this._consumers = new Map()
     }
     
     public get rtpCapabilities(): msTypes.RtpCapabilities {
@@ -46,19 +46,32 @@ export class WebRtcClient {
         this._consumerTransport = value        
     }
 
-    public getProducers() {
-        return [...this._producers]
+    public getProducers() {        
+        return [...this._producers.values()]
     }
 
     public getConsumers() {
-        return [...this._consumers]
+        return [...this._consumers.values()]
     }
 
     public addProducer(producer: msTypes.Producer) {
-        this._producers.push(producer)
+        this._producers.set(producer.id, producer)
+    }
+
+    public removeProducer(producerId: string) {
+        this._producers.delete(producerId)
     }
 
     public addConsumer(consumer: msTypes.Consumer) {
-        this._consumers.push(consumer)
+        this._consumers.set(consumer.id, consumer)
+    }
+
+    public removeConsumer(consumerId: string) {
+        this._consumers.delete(consumerId)
+    }
+
+    public close() {
+        this._consumerTransport?.close()
+        this._sendTransport?.close()
     }
 }

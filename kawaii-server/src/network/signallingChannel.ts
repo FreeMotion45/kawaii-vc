@@ -26,7 +26,7 @@ export class SignallingChannel {
         this._client = client        
     }
 
-    public subscribeSignallingChannelEvents() {
+    public subscribeEvents() {
         this._client.on("get router rtp capabilities", (callback) => this.onGetRouterRtpCapabilities(callback))
         this._client.on("create transport", (sctpCapabilities: msTypes.SctpCapabilities, type: string, callback: any) => this.onCreateTransport(sctpCapabilities, type, callback))
         this._client.on("transport connect", (connectParams: TransportConnectionParameters, callback: () => void) => this.onConnectTransport(connectParams, callback))
@@ -36,6 +36,20 @@ export class SignallingChannel {
         this._client.on("send rtp capabilities", (rtpCapabilities: msTypes.RtpCapabilities, callback: () => void) => this.onClientSentRtpCapabilities(rtpCapabilities, callback))
         this._client.on("get peers in room", (callback: (response: any) => void) => this.onGetPeersInRoom(callback))
         this._client.on("resume consumer", (consumerId: string, callback: () => void) => this.resumeConsumer(consumerId, callback))
+        this._client.on("close producer", (data: any, callback: (res: any) => void) => this.onCloseProducer(data, callback))
+    }
+
+    public unsubscribeEvents() {
+        this._client.removeAllListeners("get router rtp capabilities")
+        this._client.removeAllListeners("create transport")
+        this._client.removeAllListeners("transport connect")
+        this._client.removeAllListeners("new producer")
+        this._client.removeAllListeners("new data producer")
+        this._client.removeAllListeners("consume peer")
+        this._client.removeAllListeners("send rtp capabilities")
+        this._client.removeAllListeners("get peers in room")
+        this._client.removeAllListeners("resume consumer")
+        this._client.removeAllListeners("close producer")
     }
 
     public async send(ev: string, data: any) {
@@ -63,8 +77,7 @@ export class SignallingChannel {
         const clientSendTransport = await this._voiceChannel.createWebRtcTransport(this._client, {
             listenIps: [
                  { ip: "127.0.0.1" },
-                 { ip: "192.168.1.21" },
-                 { ip: "25.74.212.5" },
+                 { ip: "192.168.1.21" },                 
             ],
             enableTcp: true,
             enableUdp: true,
@@ -102,6 +115,12 @@ export class SignallingChannel {
         const { id, options } = clientProducerParameters
         const producer = await this._voiceChannel.addProducer(this._client, id, options)        
         callback(producer.id)
+    }
+
+    private async onCloseProducer(data: any, cb: (res: any) => void) {
+        const { producerId } = data
+        await this._voiceChannel.closeProducer(this._client, producerId)
+        cb({})
     }
 
     private async onGetPeerConsumers(peerId: string, callback: (consumerIds: string[]) => void) {
