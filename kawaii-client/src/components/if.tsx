@@ -1,24 +1,36 @@
-import React from "react";
+import React, { Children } from "react";
 
 type IfParameters = {    
     expr: boolean,
-    onTrue: HTMLElement,
-    onFalse: HTMLElement
+    children: React.ReactNode[]
+}
+
+export const True = (props: any) => {
+    return (
+        <>
+            {props.children}
+        </>
+    )
+}
+
+export const False = (props: any) => {
+    return True(props)
 }
 
 export const If = (props: IfParameters) => {
-    const { expr, onTrue, onFalse} = props
+    const { expr, children } = props    
+
     if (expr) {
         return (
             <>
-                {onTrue}
+                {children[0]}
             </>
         )
     }
 
     return (
         <>
-            {onFalse}
+            {children[1]}
         </>
     )
 }

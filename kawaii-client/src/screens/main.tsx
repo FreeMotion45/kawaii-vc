@@ -1,34 +1,48 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { SignallingChannel } from "../network/signallingChannel";
-import { Device, types as msTypes } from "mediasoup-client";
-import { Me } from "../components/me";
 import CSS from 'csstype'
 import { VoiceRoom } from "../components/room";
-import { WebRtcConnection } from "../network/webRtcConnection";
-import { If } from "../components/if";
+import { MainScreen } from "../components/mainscreen";
+import Button from 'react-bootstrap/Button'
 
 
 const bodyStyle: CSS.Properties = {
-    margin: "auto",    
-    //width: '100vw',
-    //height: '100vh',
+    backgroundColor: '#062726',
+    width: '100vw',
+    height: '100vh',
 }
+
+const leaveRoomButtonContainerStyle: CSS.Properties = {
+    display: 'flex',
+    justifyContent: 'center',
+}
+
+const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
 
 
 export function Main() {
     const socketRef = useRef<Socket | undefined>(undefined);    
     const [signallingChannel, setSignallingChannel] = useState<SignallingChannel | undefined>(undefined)
-    const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    const [audioInputDeviceId, setAudioInputDeviceId] = useState<string>()
+    const [currentConnectedChannel, setCurrentConnectedChannel] = useState<string | undefined>()
 
-    const joinRoom = async (name: string) => {
-        return new Promise((res, rej) => {
-            if (socketRef.current !== undefined) {
-                socketRef.current.emit('join room', {
-                    roomName: 'general'
-                }, res)
-            }
-        })
+    const leaveCurrentRoom = async () => {
+        if (signallingChannel !== undefined && currentConnectedChannel !== undefined) {
+            await signallingChannel.send('leave room')
+            setCurrentConnectedChannel(undefined)
+        }
+    }
+
+    const joinRoom = async (channelName: string) => {        
+        if (signallingChannel !== undefined) {
+            await leaveCurrentRoom()
+            await signallingChannel.send('join room', {
+                roomName: channelName,
+            })
+
+            setCurrentConnectedChannel(channelName)
+        }
     }
 
     useEffect(() => {
@@ -47,24 +61,39 @@ export function Main() {
         initWebRtc()
     }, [])
 
+    const k = (g: string) => {        
+        console.log('changed to: ')
+        console.log(g)
+        setAudioInputDeviceId(g)
+    }
+
     return (
         <div style={bodyStyle}>
-            {
-                signallingChannel !== undefined && <VoiceRoom joinRoom={joinRoom} signallingChannel={signallingChannel}/>
+            {/* <DeviceSelectionWindow selectedDeviceId={audioInputDeviceId} setSelectedDeviceId={k}/> */}
+
+            { 
+                signallingChannel !== undefined && 
+                <MainScreen
+                    currentConnectedChannel={currentConnectedChannel} 
+                    joinRoom={joinRoom}                    
+                    signal={signallingChannel as SignallingChannel}/> 
             }
+
             {
-                signallingChannel === undefined && 
-                <div style={{
-                        padding: '2%'
-                    }}>
-                    <span style={{
-                        color: 'white',
-                        fontSize: '3.5rem',
-                    }}>
-                        Waiting for server connection...
-                    </span>
+                currentConnectedChannel !== undefined &&
+                <div style={leaveRoomButtonContainerStyle}>
+                    <Button variant="light" onClick={leaveCurrentRoom}>
+                        Leave Room.
+                    </Button>
                 </div>
             }
+
+            {
+                currentConnectedChannel !== undefined && 
+                signallingChannel !== undefined &&
+                <VoiceRoom signallingChannel={signallingChannel}/>
+            }
+
         </div>
     )
 }

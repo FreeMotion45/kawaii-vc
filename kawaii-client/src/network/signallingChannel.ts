@@ -25,31 +25,37 @@ type DataProducerParameters = {
 }
 
 export class SignallingChannel {
-    private _ws: Socket
+    private _socket: Socket
 
-    constructor(ws: Socket) {
-        this._ws = ws
+    constructor(socket: Socket) {
+        this._socket = socket
     }
 
     public on(ev: string, callback: (data: any, cb: (res: any) => void) => void) {
-        this._ws.on(ev, callback)
+        this._socket.on(ev, callback)
     }
 
     public off(ev: string, callback: (data: any, cb: (res: any) => void) => void) {
-        this._ws.off(ev, callback)
+        this._socket.off(ev, callback)
     }
 
-    public sendRequest(ev: string, data: any) {
+    public send(ev: string, data?: any) {
         return new Promise((resolve, reject) => {
-            this._ws.emit(ev, data, (response: any) => {                
-                resolve(response)
-            })
+            if (data === undefined) {
+                this._socket.emit(ev, (response: any) => {
+                    resolve(response)
+                })
+            } else {
+                this._socket.emit(ev, data, (response: any) => {
+                    resolve(response)
+                })
+            }
         })
     }
 
     public getPeersInRoom() : Promise<string[]> {
         return new Promise((resolve, reject) => {
-            this._ws.emit("get peers in room", (response: any) => {
+            this._socket.emit("get peers in room", (response: any) => {
                 const { peers } = response
                 resolve(peers)
             })
@@ -58,7 +64,7 @@ export class SignallingChannel {
 
     public getRouterRTPCapabilities(): Promise<msTypes.RtpCapabilities> {
         return new Promise((resolve, reject) => {
-            this._ws.emit("get router rtp capabilities", (rtpCapabilities: msTypes.RtpCapabilities) => {
+            this._socket.emit("get router rtp capabilities", (rtpCapabilities: msTypes.RtpCapabilities) => {
                 resolve(rtpCapabilities)
             })
         })
@@ -66,7 +72,7 @@ export class SignallingChannel {
 
     public sendRtpCapabilities(rtpCapabilities: msTypes.RtpCapabilities) {
         return new Promise((resolve, reject) => {            
-            this._ws.emit("send rtp capabilities", rtpCapabilities, () => {
+            this._socket.emit("send rtp capabilities", rtpCapabilities, () => {
                 resolve(undefined)
             })
         })
@@ -74,7 +80,7 @@ export class SignallingChannel {
 
     public createWebRtcTransport(deviceSctpCapabilities: msTypes.SctpCapabilities, type: string): Promise<SendTransportParameters> {                
         return new Promise((resolve, reject) => {
-            this._ws.emit("create transport", deviceSctpCapabilities, type, (transportParameters: SendTransportParameters) => {
+            this._socket.emit("create transport", deviceSctpCapabilities, type, (transportParameters: SendTransportParameters) => {
                 resolve(transportParameters)
             })
         })
@@ -82,7 +88,7 @@ export class SignallingChannel {
 
     public resume(consumerId: string) {
         return new Promise((resolve, reject) => {
-            this._ws.emit("resume consumer", consumerId, () => {
+            this._socket.emit("resume consumer", consumerId, () => {
                 resolve({})
             })
         })
@@ -90,7 +96,7 @@ export class SignallingChannel {
 
     public connectTransport(transportConnectionParameters: TransportConnectionParameters) {
         return new Promise((resolve, reject) => {
-            this._ws.emit("transport connect", transportConnectionParameters, () => {
+            this._socket.emit("transport connect", transportConnectionParameters, () => {
                 resolve("ok")
             })
         })
@@ -98,7 +104,7 @@ export class SignallingChannel {
 
     public addNewProducer(producerParameters: ProducerParameters) {
         return new Promise((resolve, reject) => {
-            this._ws.emit("new producer", producerParameters, (producerId: string) => {
+            this._socket.emit("new producer", producerParameters, (producerId: string) => {
                 resolve(producerId)
             })
         })
@@ -106,7 +112,7 @@ export class SignallingChannel {
 
     public getPeerConsumers(peerId: string) : Promise<any[]> {
         return new Promise((resolve, reject) => {
-            this._ws.emit("consume peer", peerId, (consumerIds: any[]) => {
+            this._socket.emit("consume peer", peerId, (consumerIds: any[]) => {
                 resolve(consumerIds)
             })
         })
@@ -114,7 +120,7 @@ export class SignallingChannel {
 
     public addNewDataProducer(producerParameters: DataProducerParameters) {
         return new Promise((resolve, reject) => {
-            this._ws.emit("new data producer", producerParameters, (producerId: string) => {
+            this._socket.emit("new data producer", producerParameters, (producerId: string) => {
                 resolve(producerId)
             })
         })

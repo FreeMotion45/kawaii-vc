@@ -3,7 +3,7 @@ import CSS from 'csstype'
 export const roomStyle: CSS.Properties = {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'left',
 }
 
 export const peerStyle: CSS.Properties = {
