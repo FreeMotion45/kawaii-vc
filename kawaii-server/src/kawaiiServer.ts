@@ -20,6 +20,7 @@ class KawaiiServer {
         await this.createVoiceChannel('reshef-zoid')
         await this.createVoiceChannel('yoav public-baths')
         await this.createVoiceChannel('gabi-power-up-star')
+        await this.createVoiceChannel('dani-zaurus')
 
         console.log('Registering Dani SUCC events...')
 
