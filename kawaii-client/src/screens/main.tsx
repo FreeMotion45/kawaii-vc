@@ -5,13 +5,7 @@ import CSS from 'csstype'
 import { VoiceRoom } from "../components/room";
 import { MainScreen } from "../components/mainscreen";
 import Button from 'react-bootstrap/Button'
-
-
-const bodyStyle: CSS.Properties = {
-    backgroundColor: '#062726',
-    width: '100vw',
-    height: '100vh',
-}
+import { SideBar } from "../components/sidebar";
 
 const leaveRoomButtonContainerStyle: CSS.Properties = {
     display: 'flex',
@@ -19,6 +13,7 @@ const leaveRoomButtonContainerStyle: CSS.Properties = {
 }
 
 const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+const socket = io("http://localhost:42069")
 
 
 export function Main() {
@@ -54,7 +49,7 @@ export function Main() {
                 }
             })
 
-            socketRef.current = io("http://localhost:42069")
+            socketRef.current = socket
             setSignallingChannel(new SignallingChannel(socketRef.current))
         }
 
@@ -68,32 +63,38 @@ export function Main() {
     }
 
     return (
-        <div style={bodyStyle}>
-            {/* <DeviceSelectionWindow selectedDeviceId={audioInputDeviceId} setSelectedDeviceId={k}/> */}
+        <div style={{
+            display: 'flex',
+        }}>
+            <SideBar/>
+            <div style={{
+                width: '100%',
+            }}>
+                {/* <DeviceSelectionWindow selectedDeviceId={audioInputDeviceId} setSelectedDeviceId={k}/> */}
 
-            { 
-                signallingChannel !== undefined && 
-                <MainScreen
-                    currentConnectedChannel={currentConnectedChannel} 
-                    joinRoom={joinRoom}                    
-                    signal={signallingChannel as SignallingChannel}/> 
-            }
+                { 
+                    signallingChannel !== undefined && 
+                    <MainScreen                    
+                        currentConnectedChannel={currentConnectedChannel} 
+                        joinRoom={joinRoom}                    
+                        signal={signallingChannel as SignallingChannel}/> 
+                }
 
-            {
-                currentConnectedChannel !== undefined &&
-                <div style={leaveRoomButtonContainerStyle}>
-                    <Button variant="light" onClick={leaveCurrentRoom}>
-                        Leave Room.
-                    </Button>
-                </div>
-            }
+                {
+                    currentConnectedChannel !== undefined &&
+                    <div style={leaveRoomButtonContainerStyle}>
+                        <Button variant="light" onClick={leaveCurrentRoom}>
+                            Leave Room.
+                        </Button>
+                    </div>
+                }
 
-            {
-                currentConnectedChannel !== undefined && 
-                signallingChannel !== undefined &&
-                <VoiceRoom signallingChannel={signallingChannel}/>
-            }
-
+                {
+                    currentConnectedChannel !== undefined && 
+                    signallingChannel !== undefined &&
+                    <VoiceRoom signallingChannel={signallingChannel}/>
+                }
+            </div>
         </div>
     )
 }

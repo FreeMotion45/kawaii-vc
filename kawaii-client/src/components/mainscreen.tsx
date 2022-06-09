@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button'
 const channelListContainerStyle: CSS.Properties = {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center'
+    justifyContent: 'center',
 }
 
 const channelContainerStyle: CSS.Properties = {
@@ -32,9 +32,7 @@ const channelDescriptionStyle: CSS.Properties = {
     fontSize: '.75em',
 }
 
-const joinButtonStyle: CSS.Properties = {
-    //justifySelf: 'center'
-}
+
 
 export type MainScreenParameters = {
     signal: SignallingChannel,
@@ -68,29 +66,39 @@ export const MainScreen = (props: MainScreenParameters) => {
     }, [])
 
     return (
-        <div style={channelListContainerStyle}>
-            {
-                availableChannels.map(channelName => {
-                    return (
-                        <div key={channelName} style={channelContainerStyle}>
-                            <span style={channelNameStyle}>
-                                Name: {`${channelName}`}
-                            </span>
+        <>
+            <div style={{
+                width: '100%',
+            }}>
+                <div style={channelListContainerStyle}>
+                    {
+                        availableChannels.map(channelName => {
+                            return (
+                                <div key={channelName} style={channelContainerStyle}>
+                                    <span style={channelNameStyle}>
+                                        Name: {`${channelName}`}
+                                    </span>
 
-                            <span style={channelDescriptionStyle}>
-                                Description: None
-                            </span>
-                            
-                            <Button disabled={channelName === currentConnectedChannel}
-                                    variant="light"
-                                    style={joinButtonStyle} 
-                                    onClick={() => onJoinClick(channelName)}>
-                                { channelName === currentConnectedChannel ? 'You are currently in this channel' : 'Join' }
-                            </Button>
-                        </div>
-                    )
-                })
-            }
-        </div>
+                                    <span style={channelDescriptionStyle}>
+                                        Description: None
+                                    </span>
+                                    
+                                    <Button disabled={channelName === currentConnectedChannel}
+                                            variant="light"
+                                            onClick={() => onJoinClick(channelName)}>
+                                        { channelName === currentConnectedChannel ? 'You are currently in this channel' : 'Join' }
+                                    </Button>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            </div>
+            {/* <div>
+                <Button>
+                    Create new channel
+                </Button>
+            </div> */}
+        </>
     )
 }
