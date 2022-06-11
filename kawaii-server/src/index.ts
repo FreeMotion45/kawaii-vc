@@ -5,9 +5,9 @@ import https from 'https'
 import express from 'express'
 import fs from 'fs'
 
-const startHttpServer = async () => {
-    const PORT = 42069
+const [HTTPS_PORT, HTTP_PORT] = [443, 80]
 
+const startHttpServer = async () => {
     const app = express()
     
     let httpServer, tls: https.ServerOptions
@@ -17,10 +17,10 @@ const startHttpServer = async () => {
             cert: fs.readFileSync('./kawaii-server/src/cert/public.crt'),
             key: fs.readFileSync('./kawaii-server/src/cert/private.key')
         }
-        httpServer = https.createServer(tls, app).listen(PORT)
+        httpServer = https.createServer(tls, app).listen(HTTPS_PORT)
     } catch (error) {
         console.log('failed to start HTTPS server, starting HTTP server instead.')        
-        httpServer = http.createServer(app).listen(PORT)
+        httpServer = http.createServer(app).listen(HTTP_PORT)
     }
 
     app.use(express.static("D:\\Local\\Programming\\Projects\\kawaii-vc-client\\kawaii-vc\\kawaii-client\\build"))

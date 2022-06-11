@@ -17,10 +17,10 @@ class KawaiiServer {
 
         this._io = io
         await this.createVoiceChannel('general')
-        await this.createVoiceChannel('reshef-zoid')
-        await this.createVoiceChannel('yoav public-baths')
-        await this.createVoiceChannel('gabi-power-up-star')
-        await this.createVoiceChannel('dani-zaurus')
+        // await this.createVoiceChannel('reshef-zoid')
+        // await this.createVoiceChannel('yoav public-baths')
+        // await this.createVoiceChannel('gabi-power-up-star')
+        // await this.createVoiceChannel('dani-zaurus')
 
         console.log('Registering Dani SUCC events...')
 
@@ -63,8 +63,15 @@ class KawaiiServer {
         }
 
         console.log(`${userIo.id} connected!`)
+        userIo.broadcast.emit("chat message", {
+            message: `${userIo.id} connected.`
+        })
 
         userIo.on('disconnect', () => {
+            userIo.broadcast.emit("chat message", {
+                message: `${userIo.id} has disconnected.`
+            })
+
             if (clientSession.currentChannel !== undefined) {
                 clientSession.currentChannel.removeUser(userIo)
             }
@@ -94,6 +101,13 @@ class KawaiiServer {
 
             cb({
                 channelNames,
+            })
+        })
+
+        userIo.on("chat message", messageData => {
+            const { message } = messageData
+            userIo.broadcast.emit("chat message", {
+                message: `${userIo.id}: ${message}`
             })
         })
     }
