@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Peer, PeerTrackData, RtcEvent } from "../network/webRtcPeer";
 import { If, True, False } from "./if";
 import { peerStyle, videoCam } from "./styles";
-import defaultProfileImage from "../imgs/defaultProfileImage.png"
+import defaultAvatar from "../imgs/defaultAvatar.png"
 import { types as msTypes } from "mediasoup-client";
 
 
@@ -54,7 +54,7 @@ export const PeerDisplay = (props: {
                     <video ref={videoRef} style={videoCam} autoPlay/>
                 </True>
                 <False>
-                    <img src={defaultProfileImage}/>
+                    <img src={defaultAvatar} width="256" height="256"/>
                 </False>
             </If>            
             <audio ref={audioRef} autoPlay playsInline/>

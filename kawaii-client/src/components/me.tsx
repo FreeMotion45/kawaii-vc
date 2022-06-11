@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
 import { peerStyle, videoCam } from "./styles";
 import { If, True, False } from "./if"
-import defaultProfileImage from '../imgs/defaultProfileImage.jpg'
+import defaultAvatar from '../imgs/defaultAvatar.png'
 
 interface MeProps {
     videoTrack: MediaStreamTrack | undefined,
@@ -30,7 +30,7 @@ export const Me = (props: MeProps) => {
                     <video ref={videoRef} style={videoCam} autoPlay/>
                 </True>
                 <False>
-                    <img src={defaultProfileImage}/>
+                    <img src={defaultAvatar} width="256" height="256"/>
                 </False>
             </If>
         </div>

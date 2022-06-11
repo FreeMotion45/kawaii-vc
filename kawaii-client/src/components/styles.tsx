@@ -7,10 +7,12 @@ export const roomStyle: CSS.Properties = {
 }
 
 export const peerStyle: CSS.Properties = {
+    width: '312px',
+    height: '312px',
     padding: '1%',
 }
 
 export const videoCam: CSS.Properties = {
-    width: '20vw',
-    height: '20vw'
+    width: '312px',
+    height: '312px'
 }

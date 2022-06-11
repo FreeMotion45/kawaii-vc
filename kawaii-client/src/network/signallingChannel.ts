@@ -14,7 +14,7 @@ type TransportConnectionParameters = {
     dtlsParameters: msTypes.DtlsParameters,
 }
 
-type ProducerParameters =  {
+type ProducerParameters = {
     id: string,
     options: msTypes.ProducerOptions
 }
@@ -22,6 +22,16 @@ type ProducerParameters =  {
 type DataProducerParameters = {
     id: string,
     options: msTypes.DataProducerOptions
+}
+
+export const socketSend = (sock: Socket, ev: string, data?: any) => {
+    return new Promise((res, rej) => {
+        if (data === undefined) {
+            sock.emit(ev, res)
+        } else {
+            sock.emit(ev, data, res)
+        }
+    })
 }
 
 export class SignallingChannel {

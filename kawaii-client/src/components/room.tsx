@@ -7,10 +7,11 @@ import { SignallingChannel } from "../network/signallingChannel";
 import { Peer, PeerTrackData, RtcEvent } from "../network/webRtcPeer";
 import { setInterval } from "timers/promises";
 import { False, If, True } from "./if";
+import Button from "react-bootstrap/Button"
 import { Me } from "./me";
 
 
-type ConnectionStatus = 'connected' | 'not connected'
+type ConnectionStatus = 'connected' | 'connecting' | 'not connected'
 
 
 const printMap = (map: RTCStatsReport | undefined) => {
@@ -50,10 +51,16 @@ export const VoiceRoom = (props: {
         setPeers(new Map(peers))
     }
 
-    const enableMic = async () => {
-        const media = await navigator.mediaDevices.getUserMedia({ audio: true })
-        const track = media.getAudioTracks()[0]
-        await webRtcConnection.produceTrack({ track })
+    const toggleMic = async () => {
+        if (isLocalMuted) {
+            const media = await navigator.mediaDevices.getUserMedia({ audio: true })
+            const track = media.getAudioTracks()[0]
+            await webRtcConnection.produceTrack({ track })
+            setIsLocalMuted(false)
+        } else {
+            await webRtcConnection.stopProducingTrack('audio')
+            setIsLocalMuted(true)
+        }
     }
 
     const toggleVideo = async () => {
@@ -119,22 +126,13 @@ export const VoiceRoom = (props: {
 
                     <Me videoTrack={localVideoTrack}/>
 
-                    <button onClick={() => enableMic()}>
-                        Enable microphone
-                    </button>
+                    <Button variant="light" onClick={() => toggleMic()}>
+                        { isLocalMuted ? "Enable audio" : "Disable audio" }
+                    </Button>
 
-                    <If expr={localVideoTrack === undefined}>
-                        <True>
-                            <button onClick={() => toggleVideo()}>
-                                Enable video
-                            </button>
-                        </True>
-                        <False>
-                        <button onClick={() => toggleVideo()}>
-                                Disable video
-                            </button>
-                        </False>
-                    </If>
+                    <Button variant="light" onClick={() => toggleVideo()}>
+                        { localVideoTrack === undefined ? "Enable video" : "Disable video" }
+                    </Button>
 
                     <div style={roomStyle}>
                         {Array.from(peers.entries()).map(([id, peer], _)=> {

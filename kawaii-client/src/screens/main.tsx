@@ -6,6 +6,7 @@ import { VoiceRoom } from "../components/room";
 import { MainScreen } from "../components/mainscreen";
 import Button from 'react-bootstrap/Button'
 import { SideBar } from "../components/sidebar";
+import { ChatBox } from "../components/chatbox/chatbox";
 
 const leaveRoomButtonContainerStyle: CSS.Properties = {
     display: 'flex',
@@ -13,11 +14,11 @@ const leaveRoomButtonContainerStyle: CSS.Properties = {
 }
 
 const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
-const socket = io("http://localhost:42069")
+const socket = io("http://192.168.1.21")
 
 
 export function Main() {
-    const socketRef = useRef<Socket | undefined>(undefined);    
+    const [isConnected, setIsConnected] = useState(false)
     const [signallingChannel, setSignallingChannel] = useState<SignallingChannel | undefined>(undefined)
     const [audioInputDeviceId, setAudioInputDeviceId] = useState<string>()
     const [currentConnectedChannel, setCurrentConnectedChannel] = useState<string | undefined>()
@@ -49,11 +50,22 @@ export function Main() {
                 }
             })
 
-            socketRef.current = socket
-            setSignallingChannel(new SignallingChannel(socketRef.current))
+            setSignallingChannel(new SignallingChannel(socket))
         }
 
         initWebRtc()
+    }, [])
+
+    useEffect(() => {
+        const onConnect = () => {
+            setIsConnected(true)
+        }
+
+        socket.on("connect", onConnect)
+
+        return () => {
+            socket.off("connect", onConnect)
+        }
     }, [])
 
     const k = (g: string) => {        
@@ -93,6 +105,11 @@ export function Main() {
                     currentConnectedChannel !== undefined && 
                     signallingChannel !== undefined &&
                     <VoiceRoom signallingChannel={signallingChannel}/>
+                }
+
+                {
+                    // socket.connected &&
+                    <ChatBox socket={socket}/>
                 }
             </div>
         </div>
