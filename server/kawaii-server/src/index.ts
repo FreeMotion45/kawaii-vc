@@ -26,7 +26,7 @@ const startHttpServer = async () => {
         httpServer = http.createServer(app).listen(HTTP_PORT)
     }
 
-    app.use(express.static("D:\\Local\\Programming\\Projects\\kawaii-vc-client\\kawaii-vc\\kawaii-client\\build"))
+    app.use(express.static("../client/kawaii-client/build"))
     
     registerHttpEndpoints(app)
     await startSocketIOServer(httpServer, app)
