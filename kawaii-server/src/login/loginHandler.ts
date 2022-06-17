@@ -7,6 +7,14 @@ type Token = {
     expirationDate: number,    
 }
 
+type LoginError = 'bad username' | 'bad password'
+
+type LoginResult = {
+    success: boolean,
+    error?: LoginError,
+    token?: Token,
+}
+
 class LoginHandler {
     private db: LoginDB
     private tokens: Map<string, Token> = new Map()
@@ -63,10 +71,11 @@ class LoginHandler {
         }
     }
 
-    public tryLogin(username: string, password: string) : Token {
-        if (this.db.tryLoginUser(username, password)) {
-            return this.issueTokenForUser(username)
-        }
+    public tryLogin(username: string, password: string) : LoginResult {
+        const user = this.db.getUserCredentials(username)
+        if (user === undefined) return { success: false, error: 'bad username' }
+        if (user.password !== password) return { success: false, error: 'bad password' }
+        return { success: true, token: this.issueTokenForUser(username)}
     }
 
     public tryTokenLogin(token: string) : boolean {
@@ -99,18 +108,19 @@ export const registerLoginEndpoints = (app: express.Application, loginDB: LoginD
 
     app.post('/login', (req, res) => {
         const { username, password } = req.body
-        const sessionToken = loginHandler.tryLogin(username, password)
+        const loginResult = loginHandler.tryLogin(username, password)
         
-        if (sessionToken !== undefined) {
+        if (loginResult.success) {
             console.log(`Sucessfull login for user: ${username}`)
             res.json({
                 success: true,
-                token: sessionToken,
+                token: loginResult.token,
             })
         } else {
             console.log(`Unsuccessfull login attempt to user: ${username}`)
-            res.status(404).json({
+            res.json({
                 success: false,
+                error: loginResult.error
             })
         }
     })

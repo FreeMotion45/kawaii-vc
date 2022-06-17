@@ -1,12 +1,12 @@
-export interface LoginDB {    
-    tryLoginUser(username: string, password: string) : boolean,
-    tryRegister(username: string, password: string) : boolean,
-}
-
 export type User = {
     username: string,
     password: string,
 }
+export interface LoginDB {    
+    getUserCredentials(username: string) : User,
+    tryRegister(username: string, password: string) : boolean,
+}
+
 
 export class MemoryDB implements LoginDB {
     private users: User[] = []
@@ -15,9 +15,8 @@ export class MemoryDB implements LoginDB {
         return this.users.find(user => user.username === username)
     }
 
-    public tryLoginUser(username: string, password: string) {
-        const user = this.getUser(username)
-        return user !== undefined && user.password === password
+    public getUserCredentials(username: string) {
+        return this.getUser(username)
     }
 
     public tryRegister(username: string, password: string) {
