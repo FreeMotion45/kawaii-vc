@@ -5,8 +5,8 @@
 node_modules
 **/node_modules
 
-# Ignore all text files
-*.txt
+# Ignore all text files - Emanuel note: why???
+# *.txt
 
 # Ignore files related to API keys
 .env
