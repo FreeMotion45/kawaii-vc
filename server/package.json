@@ -9,5 +9,8 @@
         "mediasoup": "^3.9.13",
         "socket.io": "^4.4.1",
         "uuid": "^8.3.2"
+    },
+    "scripts": {
+        "start": "node ./kawaii-server/dist/index.js"
     }
 }
