@@ -4,6 +4,9 @@ import http from 'http'
 import https from 'https'
 import express from 'express'
 import fs from 'fs'
+import cors from 'cors'
+import { registerLoginEndpoints } from './login/loginHandler'
+import { MemoryDB } from './login/dal/memoryDb'
 
 const [HTTPS_PORT, HTTP_PORT] = [443, 80]
 
@@ -25,7 +28,14 @@ const startHttpServer = async () => {
 
     app.use(express.static("D:\\Local\\Programming\\Projects\\kawaii-vc-client\\kawaii-vc\\kawaii-client\\build"))
     
+    registerHttpEndpoints(app)
     await startSocketIOServer(httpServer, app)
+}
+
+const registerHttpEndpoints = (app: express.Application) => {
+    app.use(express.json())
+    app.use(cors())
+    registerLoginEndpoints(app, new MemoryDB())
 }
 
 const startSocketIOServer = async (httpServer: http.Server, app: express.Application) => {
