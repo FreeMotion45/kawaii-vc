@@ -8,3 +8,8 @@ body {
 button.btn {
     background-color: #87556F;
 }
+
+.center-content {
+    display: flex;
+    justify-content: center;
+}

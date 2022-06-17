@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
-import { peerStyle, videoCam } from "./styles";
+import { myStyle, videoCam } from "./styles";
 import { If, True, False } from "./if"
 import defaultAvatar from '../imgs/defaultAvatar.png'
 
@@ -24,7 +24,7 @@ export const Me = (props: MeProps) => {
     })
 
     return (
-        <div style={peerStyle}>
+        <div style={myStyle}>
             <If expr={videoTrack !== undefined}>
                 <True>
                     <video ref={videoRef} style={videoCam} autoPlay/>

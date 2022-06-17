@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
-import { PeerDisplay } from "./peer";
-import { roomStyle, videoCam, peerStyle } from "./styles";
-import { WebRtcConnection } from "../network/webRtcConnection";
-import { SignallingChannel } from "../network/signallingChannel";
-import { Peer, PeerTrackData, RtcEvent } from "../network/webRtcPeer";
+import { PeerDisplay } from "../peer";
+import { roomStyle, videoCam, peerStyle } from "../styles";
+import { WebRtcConnection } from "../../network/webRtcConnection";
+import { SignallingChannel } from "../../network/signallingChannel";
+import { Peer, PeerTrackData, RtcEvent } from "../../network/webRtcPeer";
 import { setInterval } from "timers/promises";
-import { False, If, True } from "./if";
+import { False, If, True } from "../if";
 import Button from "react-bootstrap/Button"
-import { Me } from "./me";
+import { Me } from "../me";
+import "./room.css"
 
 
 type ConnectionStatus = 'connected' | 'connecting' | 'not connected'
@@ -124,15 +125,19 @@ export const VoiceRoom = (props: {
                 </True>
                 <False>
 
-                    <Me videoTrack={localVideoTrack}/>
+                    <div style={{margin: 'auto'}}>
+                        <Me videoTrack={localVideoTrack}/>
+                    </div>
 
-                    <Button variant="light" onClick={() => toggleMic()}>
-                        { isLocalMuted ? "Enable audio" : "Disable audio" }
-                    </Button>
+                    <div className="media-button-container">
+                        <Button className="media-button" variant="light" onClick={() => toggleMic()}>
+                            { isLocalMuted ? "Enable audio" : "Disable audio" }
+                        </Button>
 
-                    <Button variant="light" onClick={() => toggleVideo()}>
-                        { localVideoTrack === undefined ? "Enable video" : "Disable video" }
-                    </Button>
+                        <Button className="media-button" variant="light" onClick={() => toggleVideo()}>
+                            { localVideoTrack === undefined ? "Enable video" : "Disable video" }
+                        </Button>
+                    </div>
 
                     <div style={roomStyle}>
                         {Array.from(peers.entries()).map(([id, peer], _)=> {
