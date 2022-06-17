@@ -1,0 +1,8 @@
+.media-button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.media-button {
+    margin: 1% 1%;
+}

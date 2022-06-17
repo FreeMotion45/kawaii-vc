@@ -1,0 +1,15 @@
+body {
+    /* Overriding bootstrap's default background color */
+    background-color: #322F3D !important;
+    margin: 0;    
+}
+
+/* Overriding bootstrap's button color */
+button.btn {
+    background-color: #87556F;
+}
+
+.center-content {
+    display: flex;
+    justify-content: center;
+}

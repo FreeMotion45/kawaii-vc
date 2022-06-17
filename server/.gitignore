@@ -12,3 +12,10 @@ node_modules
 
 # Ignore SASS config files
 .sass-cache
+
+# Ignoring build folders
+*/dist/*
+*build*
+
+# vs code
+.vscode
