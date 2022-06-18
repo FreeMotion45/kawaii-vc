@@ -11,8 +11,6 @@
         "uuid": "^8.3.2"
     },
     "scripts": {
-        "tsc": "node ./node_modules/typescript/bin/tsc",
-        "prestart": "rm -rf ./dist && npm run tsc",
         "start": "node ./dist/index.js"
     }
 }
