@@ -11,7 +11,8 @@
         "uuid": "^8.3.2"
     },
     "scripts": {
-        "prestart": "rm -rf ./kawaii-server/dist && tsc --project ./kawaii-server --outDir ./kawaii-server/dist",
-        "start": "node ./kawaii-server/dist/index.js"
+        "tsc": "tsc",
+        "prestart": "rm -rf ./dist && npm run tsc",
+        "start": "node ./dist/index.js"
     }
 }

@@ -17,8 +17,8 @@ const startHttpServer = async () => {
     try {
         console.log('starting with HTTPS!')
         tls = {
-            cert: fs.readFileSync('./kawaii-server/src/cert/public.crt'),
-            key: fs.readFileSync('./kawaii-server/src/cert/private.key')
+            cert: fs.readFileSync('./src/cert/public.crt'),
+            key: fs.readFileSync('./src/cert/private.key')
         }
         httpServer = https.createServer(tls, app).listen(HTTPS_PORT)
     } catch (error) {
@@ -26,7 +26,8 @@ const startHttpServer = async () => {
         httpServer = http.createServer(app).listen(HTTP_PORT)
     }
 
-    app.use(express.static("../client/build"))
+    console.log('Starting in ' + process.cwd())
+    app.use(express.static("./static"))
     
     registerHttpEndpoints(app)
     await startSocketIOServer(httpServer, app)
