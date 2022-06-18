@@ -10,6 +10,13 @@ import { MemoryDB } from './login/dal/memoryDb'
 
 const [HTTPS_PORT, HTTP_PORT] = [443, 80]
 
+const getPort = (defaultPort: number) => {
+    if (process.env.PORT !== undefined && process.env.PORT !== null) {
+        return Number(process.env.PORT)
+    }
+    return defaultPort
+}
+
 const startHttpServer = async () => {
     const app = express()
     
@@ -20,10 +27,12 @@ const startHttpServer = async () => {
             cert: fs.readFileSync('./src/cert/public.crt'),
             key: fs.readFileSync('./src/cert/private.key')
         }
-        httpServer = https.createServer(tls, app).listen(HTTPS_PORT)
+        const port = getPort(HTTPS_PORT)
+        console.log(`LISTENING ON PORT ${port}`)
+        httpServer = https.createServer(tls, app).listen(port)
     } catch (error) {
         console.log('failed to start HTTPS server, starting HTTP server instead.')        
-        httpServer = http.createServer(app).listen(HTTP_PORT)
+        httpServer = http.createServer(app).listen(getPort(HTTP_PORT))
     }
 
     console.log('Starting in ' + process.cwd())

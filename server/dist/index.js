@@ -13,6 +13,12 @@ const cors_1 = __importDefault(require("cors"));
 const loginHandler_1 = require("./login/loginHandler");
 const memoryDb_1 = require("./login/dal/memoryDb");
 const [HTTPS_PORT, HTTP_PORT] = [443, 80];
+const getPort = (defaultPort) => {
+    if (process.env.PORT !== undefined && process.env.PORT !== null) {
+        return Number(process.env.PORT);
+    }
+    return defaultPort;
+};
 const startHttpServer = async () => {
     const app = (0, express_1.default)();
     let httpServer, tls;
@@ -22,11 +28,13 @@ const startHttpServer = async () => {
             cert: fs_1.default.readFileSync('./src/cert/public.crt'),
             key: fs_1.default.readFileSync('./src/cert/private.key')
         };
-        httpServer = https_1.default.createServer(tls, app).listen(HTTPS_PORT);
+        const port = getPort(HTTPS_PORT);
+        console.log(`LISTENING ON PORT ${port}`);
+        httpServer = https_1.default.createServer(tls, app).listen(port);
     }
     catch (error) {
         console.log('failed to start HTTPS server, starting HTTP server instead.');
-        httpServer = http_1.default.createServer(app).listen(HTTP_PORT);
+        httpServer = http_1.default.createServer(app).listen(getPort(HTTP_PORT));
     }
     console.log('Starting in ' + process.cwd());
     app.use(express_1.default.static("./static"));
