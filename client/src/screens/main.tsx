@@ -16,7 +16,7 @@ const leaveRoomButtonContainerStyle: CSS.Properties = {
 }
 
 const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
-const socket = io("https://192.168.1.21")
+const socket = io()
 
 
 export function Main() {
