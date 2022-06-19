@@ -77,7 +77,8 @@ export class SignallingChannel {
         const clientSendTransport = await this._voiceChannel.createWebRtcTransport(this._client, {
             listenIps: [
                  { ip: "127.0.0.1" },
-                 { ip: "192.168.1.21" },                 
+                 { ip: "192.168.1.21" },
+                 { ip: "25.81.129.4" },
             ],
             enableTcp: true,
             enableUdp: true,
