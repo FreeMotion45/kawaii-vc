@@ -3,7 +3,15 @@
 
 # Ignore node_modules folder
 node_modules
-**/node_modules
+client/node_modules
+server/node_modules
+server/static
+
+client/.DS_Store
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
 
 # Ignore all text files - Emanuel note: why???
 # *.txt
