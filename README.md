@@ -20,10 +20,10 @@ Dependencies:
 - cmake - (required by `mediasoup`)
 
 
-Clone the repo, then run `npm install` to install all the necessary packages. You might need to install `python3`, `pip3` and `cmake`, since they are required to install and build the `mediasoup` package.
+Clone the repo, then run `npm install` in `kawaii-vc/client` and `kawaii-vc/server` to install all the necessary packages. You might need to install `python3`, `pip3` and `cmake`, since they are required to install and build the `mediasoup` package.
 
 # Running the application
-Open you terminal and navigate to `kawaii-vc/client` and run `npm run build`. This will build the react app, and move it to `server/static`. The next step is to run the server. Navigate to `kawaii-vc/server` and run `npm start` to run the server. You can also start the server over HTTPS by putting your private key and public certificate into the `server/src/cert` folder.
+Open your terminal and navigate to `kawaii-vc/client` and run `npm run build`. This will build the react app, and move it to `server/static`. The next step is to run the server. Navigate to `kawaii-vc/server` and run `npm start` to run the server. You can also start the server over HTTPS by putting your private key and public certificate into the `server/src/cert` folder.
 
 # Final notes
 I have achieved all I wanted in this repo, I successfully created a working voice and video chat. I have even used it to talk and see my family while they were ill with the Covid-19 virus! Since the main goal of this little project has been achieved, I have stopped developing it. If you stumble upon this, I hope it helps you :)
